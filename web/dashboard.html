@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario de Ollas - Panel</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="dashboard-body">
+  <!-- Mobile Toggle -->
+  <button id="menuToggle" class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="logo">
+      <h2>Gestión Ollas</h2>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#" class="active" onclick="showSection('productos'); toggleSidebar();">Productos</a></li>
+        <li><a href="#" onclick="showSection('ventas'); toggleSidebar();">Ventas</a></li>
+      </ul>
+    </nav>
+    <div class="user-info">
+      <span id="userEmail">Usuario</span>
+      <button onclick="logout()" class="btn-logout">Cerrar Sesión</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <!-- PRODUCTOS SECTION -->
+    <div id="productosSection" class="section">
+      <div class="header">
+        <h1>Inventario de Productos</h1>
+        <button class="btn-primary" onclick="abrirModalProducto()">+ Nuevo Producto</button>
+      </div>
+
+      <div class="filters">
+        <div class="filter-group" style="width: 100%;">
+          <input type="text" id="searchProduct" placeholder="Buscar por nombre o categoría..."
+            onkeyup="filterProductos()" style="width: 100%;">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-responsive">
+          <table id="productosTable">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Código</th>
+                <th>Stock</th>
+                <th>Precio</th>
+                <th>Categoría</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="5" style="text-align: center;">Cargando productos...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENTAS SECTION -->
+    <div id="ventasSection" class="section" style="display: none;">
+      <div class="header">
+        <h1>Registro de Ventas</h1>
+        <button class="btn-primary" onclick="exportarReporteDiario()" style="background-color: #217346;">Reporte Diario
+          Contador (Excel)</button>
+      </div>
+
+      <!-- Total Card -->
+      <div class="card"
+        style="margin-bottom: 1rem; text-align: center; background: #e3f2fd; border-left: 5px solid #2196F3;">
+        <h3>Total Vendido Hoy</h3>
+        <h1 id="totalVentasDiaDisplay" style="color: #1565C0; font-size: 2.5rem; margin: 0.5rem 0;">S/ 0.00</h1>
+      </div>
+
+      <div class="filters">
+        <div class="filter-group">
+          <label for="filterDate">Día:</label>
+          <input type="date" id="filterDate" onchange="filterVentas()">
+        </div>
+        <div class="filter-group">
+          <label for="filterSeller">Vendedor:</label>
+          <input type="text" id="filterSeller" placeholder="Nombre vendedor" onkeyup="filterVentas()">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-responsive">
+          <table id="ventasTable">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <th>Total</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="5" style="text-align: center;">Cargando ventas...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable Area -->
+  <div id="printableArea">
+    <!-- Content injected by JS -->
+  </div>
+
+  <!-- Picking Modal -->
+  <div id="pickingModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="cerrarModal('pickingModal')">&times;</span>
+      <h2>Detalle de Picking (Almacén)</h2>
+      <div id="pickingContent"></div>
+      <button class="btn-primary" onclick="cerrarModal('pickingModal')" style="margin-top: 1rem;">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Product Modal (Add) -->
+  <div id="productoModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="cerrarModal('productoModal')">&times;</span>
+      <h2>Nuevo Producto</h2>
+      <form id="productoForm" onsubmit="guardarNuevoProducto(event)">
+        <div class="form-group">
+          <label>Nombre:</label>
+          <input type="text" id="prodNombre" required>
+        </div>
+        <div class="form-group">
+          <label>Código:</label>
+          <input type="text" id="prodCodigo" required>
+        </div>
+        <div class="form-group">
+          <label>Categoría:</label>
+          <input type="text" id="prodCategoria" required>
+        </div>
+        <div class="form-group">
+          <label>Precio Unitario (S/):</label>
+          <input type="number" step="0.01" id="prodPrecio" required>
+        </div>
+        <div class="form-group">
+          <label>Stock Inicial:</label>
+          <input type="number" id="prodStock" required>
+        </div>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editarModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="cerrarModal('editarModal')">&times;</span>
+      <h2>Editar Producto</h2>
+      <input type="hidden" id="editId">
+      <div class="form-group">
+        <label>Nombre:</label>
+        <input type="text" id="editNombre" required>
+      </div>
+      <div class="form-group">
+        <label>Precio Unitario (S/):</label>
+        <input type="number" step="0.01" id="editPrecio" required>
+      </div>
+      <div class="form-group">
+        <label>Stock:</label>
+        <input type="number" id="editStock" required>
+      </div>
+      <button class="btn-primary" onclick="guardarEdicionProducto()">Guardar Cambios</button>
+    </div>
+  </div>
+
+  <!-- Stock Modal -->
+  <div id="stockModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="cerrarModal('stockModal')">&times;</span>
+      <h2>Ajuste de Stock</h2>
+      <h3 id="stockProdName"></h3>
+      <p>Stock Actual: <span id="stockActualDisplay"></span></p>
+      <input type="hidden" id="stockId">
+      <div class="form-group">
+        <label>Cantidad a ajustar:</label>
+        <input type="number" id="stockCantidad" min="1" value="1">
+      </div>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button class="btn-primary" style="background-color: #2196F3;" onclick="aplicarStock(1)">+ Ingreso</button>
+        <button class="btn-primary" style="background-color: #f44336;" onclick="aplicarStock(-1)">- Salida /
+          Pérdida</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SheetJS -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Check auth on load
+    window.onload = function () {
+      checkAuth();
+      initDashboard();
+    }
+
+    // Sidebar Toggle
+    function toggleSidebar() {
+      if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.style.display === 'flex') {
+          sidebar.style.display = 'none';
+        } else {
+          sidebar.style.display = 'flex';
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>

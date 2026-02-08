@@ -1,0 +1,522 @@
+:root {
+  --primary-color: #4CAF50;
+  --primary-dark: #388E3C;
+  --background-color: #f5f5f5;
+  --card-color: #ffffff;
+  --text-color: #333333;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Login Styles */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--primary-color), #2196F3);
+}
+
+.login-card {
+  background: var(--card-color);
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-card h1 {
+  margin-bottom: 0.5rem;
+  color: var(--primary-color);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.error-message {
+  color: #f44336;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  min-height: 1.2em;
+}
+
+/* Dashboard Styles */
+.dashboard-body {
+  display: flex;
+  height: 100vh;
+}
+
+.menu-toggle {
+  display: none;
+  /* Hidden on desktop */
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1001;
+  background: #333;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #263238;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.logo {
+  padding: 1.5rem;
+  background-color: #212121;
+  text-align: center;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.sidebar nav a {
+  display: block;
+  padding: 1rem 1.5rem;
+  color: #cfd8dc;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background-color: #37474f;
+  color: white;
+}
+
+.user-info {
+  margin-top: auto;
+  padding: 1.5rem;
+  border-top: 1px solid #37474f;
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid #cfd8dc;
+  color: white;
+  padding: 0.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-logout:hover {
+  background-color: #37474f;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-weight: 300;
+}
+
+.header .btn-primary {
+  width: auto;
+}
+
+.card {
+  background: var(--card-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+  /* Ensure table scrolls on small screens */
+}
+
+th,
+td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Stock Traffic Light */
+.stock-critical {
+  background-color: #ffcdd2 !important;
+  /* Red */
+  color: #b71c1c;
+}
+
+.stock-warning {
+  background-color: #fff9c4 !important;
+  /* Yellow */
+  color: #f57f17;
+}
+
+.stock-good {
+  background-color: #c8e6c9 !important;
+  /* Green */
+  color: #1b5e20;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-group input {
+  padding: 0.5rem;
+}
+
+/* Action Buttons */
+.btn-whatsapp {
+  background-color: #25D366;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.btn-print {
+  background-color: #607d8b;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.btn-detail {
+  background-color: #ff9800;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.btn-edit {
+  background-color: #2196F3;
+  /* Blue */
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.btn-stock {
+  background-color: #9C27B0;
+  /* Purple */
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 2rem;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.close-modal {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-modal:hover {
+  color: black;
+}
+
+.picking-item {
+  font-size: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.picking-item strong {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+}
+
+/* Print View - Hidden by default */
+#printableArea {
+  display: none;
+}
+
+/* Print Media Query */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #printableArea,
+  #printableArea * {
+    visibility: visible;
+  }
+
+  #printableArea {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: white;
+  }
+
+  .sidebar,
+  .main-content,
+  .filters,
+  .modal {
+    display: none !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* A4 Style */
+  .print-a4 .invoice-container {
+    width: 100%;
+    max-width: 210mm;
+    /* A4 width */
+    margin: 0 auto;
+    border: 1px solid #eee;
+    padding: 20mm;
+  }
+
+  /* Ticket 80mm Style */
+  .print-ticket .invoice-container {
+    width: 80mm;
+    margin: 0;
+    padding: 5mm;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    border: none;
+  }
+
+  .invoice-header {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .print-ticket .invoice-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .invoice-details {
+    margin-bottom: 1rem;
+  }
+
+  .invoice-items {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+  }
+
+  .invoice-items th,
+  .invoice-items td {
+    border-bottom: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: left;
+  }
+
+  /* Compact table for ticket */
+  .print-ticket .invoice-items th,
+  .print-ticket .invoice-items td {
+    padding: 2px;
+    font-size: 0.9em;
+  }
+
+  .invoice-total {
+    text-align: right;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .dashboard-body {
+    flex-direction: column;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .sidebar {
+    display: none;
+    /* Hidden by default */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    padding-top: 60px;
+    /* Space for toggle */
+  }
+
+  .main-content {
+    padding: 1rem;
+    margin-top: 50px;
+    /* Space for toggle bar area */
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header .btn-primary {
+    width: 100%;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .card {
+    padding: 0.5rem;
+  }
+
+  /* Make total card full width */
+  #totalVentasDiaDisplay {
+    font-size: 2rem !important;
+  }
+}
