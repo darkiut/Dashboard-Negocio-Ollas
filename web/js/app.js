@@ -145,6 +145,7 @@ function renderProductos(productos) {
 
         tableBody.appendChild(row);
     });
+    actualizarMetricas();
 }
 
 function filterProductos() {
@@ -235,13 +236,14 @@ function renderVentas(ventas) {
         const cellTotal = document.createElement("td");
         cellTotal.textContent = `S/ ${parseFloat(venta.total).toFixed(2)}`;
 
-        const cellAcciones = document.createElement("td");
+                const cellAcciones = document.createElement("td");
         cellAcciones.innerHTML = `
+            <button onclick="verDetalleVenta(${ventaJson})" class="btn-detail" style="background: #2196F3;">👁️ Ver</button>
             <a href="${waLink}" target="_blank" class="btn-whatsapp">WhatsApp</a>
-            <button onclick="imprimirVenta(${ventaJson}, 'a4')" class="btn-print">Imprimir A4</button>
-            <button onclick="imprimirVenta(${ventaJson}, 'ticket')" class="btn-print">Imprimir Ticket</button>
-            <button onclick="verDetallePicking(${ventaJson})" class="btn-detail">Ver Detalle</button>
+            <button onclick="imprimirVenta(${ventaJson}, 'a4')" class="btn-print">A4</button>
+            <button onclick="imprimirVenta(${ventaJson}, 'ticket')" class="btn-print">Ticket</button>
         `;
+
 
         row.appendChild(cellDate);
         row.appendChild(cellCliente);
@@ -251,6 +253,7 @@ function renderVentas(ventas) {
 
         tableBody.appendChild(row);
     });
+    actualizarMetricas();
 }
 
 function filterVentas() {
@@ -643,3 +646,331 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// ==================== EDITAR Y ELIMINAR VENTAS ====================
+
+let ventaActual = null; // Para guardar la venta que se está editando
+
+// Ver detalles completos de la venta
+// Ver detalles completos de la venta - VERSIÓN CARDS
+function verDetalleVenta(venta) {
+    ventaActual = venta;
+    const modal = document.getElementById('detalleVentaModal');
+    const content = document.getElementById('detalleVentaContent');
+    content.innerHTML = '';
+
+    const dateStr = new Date(venta.fecha).toLocaleString();
+
+    // Información del cliente
+    const infoCliente = `
+        <div style="background: linear-gradient(135deg, #f8fafc, #e2e8f0); padding: 1.25rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid var(--primary);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; font-size: 0.9rem;">
+                <div><strong>📅 Fecha:</strong><br><span style="color: var(--text-secondary);">${dateStr}</span></div>
+                <div><strong>👤 Cliente:</strong><br><span style="color: var(--text-secondary);">${venta.clienteNombre || 'General'}</span></div>
+                <div><strong>📝 DNI/RUC:</strong><br><span style="color: var(--text-secondary);">${venta.clienteDni || venta.clienteRuc || '-'}</span></div>
+                <div><strong>📞 Teléfono:</strong><br><span style="color: var(--text-secondary);">${venta.clienteTelefono || '-'}</span></div>
+            </div>
+            <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; font-size: 0.9rem;">
+                <div><strong>📍 Dirección:</strong><br><span style="color: var(--text-secondary);">${venta.clienteDireccion || '-'}</span></div>
+                <div><strong>🛒 Vendedor:</strong><br><span style="color: var(--text-secondary);">${venta.vendedorNombre || 'Desconocido'}</span></div>
+                <div><strong>📄 Documento:</strong><br><span style="color: var(--text-secondary);">${(venta.tipoDocumento || 'Boleta').toUpperCase()}</span></div>
+            </div>
+        </div>
+    `;
+
+    // Productos como cards
+    const productosCards = Object.values(venta.productos || {}).map(item => `
+        <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; transition: var(--transition);" onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 600; color: var(--text-primary); font-size: 1rem; margin-bottom: 0.5rem;">${item.nombre}</div>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--text-secondary);">
+                    <span style="background: var(--bg-main); padding: 0.25rem 0.625rem; border-radius: 6px;">
+                        📦 Cant: <strong>${item.cantidad}</strong>
+                    </span>
+                    <span style="background: var(--bg-main); padding: 0.25rem 0.625rem; border-radius: 6px;">
+                        💵 P.Unit: <strong>S/ ${parseFloat(item.precioUnitario).toFixed(2)}</strong>
+                    </span>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Subtotal</div>
+                <div style="font-weight: 700; color: var(--primary); font-size: 1.25rem; white-space: nowrap;">
+                    S/ ${parseFloat(item.subtotal).toFixed(2)}
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    const totalCard = `
+        <div style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); padding: 1.5rem; border-radius: 12px; text-align: right; border: 2px solid var(--primary); margin-top: 1rem;">
+            <div style="font-size: 0.9rem; color: #1e40af; margin-bottom: 0.5rem; font-weight: 600;">💰 TOTAL A PAGAR</div>
+            <div style="font-size: 2.25rem; font-weight: 700; color: var(--primary); line-height: 1;">
+                S/ ${parseFloat(venta.total).toFixed(2)}
+            </div>
+        </div>
+    `;
+
+    const detalleHTML = `
+        ${infoCliente}
+        <h3 style="margin: 1.5rem 0 1rem; color: var(--text-primary); font-size: 1.1rem;">🛍️ Productos Pedidos</h3>
+        <div style="max-height: 350px; overflow-y: auto; padding-right: 0.5rem;">
+            ${productosCards}
+        </div>
+        ${totalCard}
+    `;
+
+    content.innerHTML = detalleHTML;
+    modal.style.display = 'block';
+}
+
+
+
+// Iniciar edición de venta
+function iniciarEdicionVenta() {
+    if (!ventaActual) return;
+    
+    const modal = document.getElementById('editarVentaModal');
+    const content = document.getElementById('editarVentaContent');
+    
+    let productosHTML = '<div style="max-height: 400px; overflow-y: auto;">';
+    
+    Object.entries(ventaActual.productos || {}).forEach(([prodId, item]) => {
+        productosHTML += `
+            <div class="producto-editable" data-producto-id="${prodId}" style="background: #f5f5f5; padding: 1rem; margin-bottom: 0.5rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="flex: 1;">
+                    <strong>${item.nombre}</strong><br>
+                    <span style="font-size: 0.9rem; color: #666;">S/ ${parseFloat(item.precioUnitario).toFixed(2)} c/u</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <button onclick="cambiarCantidad('${prodId}', -1)" style="padding: 0.25rem 0.75rem; background: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">-</button>
+                    <input type="number" id="cant_${prodId}" value="${item.cantidad}" min="0" style="width: 60px; text-align: center; padding: 0.25rem;" onchange="actualizarSubtotal('${prodId}')">
+                    <button onclick="cambiarCantidad('${prodId}', 1)" style="padding: 0.25rem 0.75rem; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">+</button>
+                    <span id="subtotal_${prodId}" style="margin-left: 1rem; min-width: 80px; text-align: right;">S/ ${parseFloat(item.subtotal).toFixed(2)}</span>
+                    <button onclick="eliminarProductoVenta('${prodId}')" style="padding: 0.25rem 0.75rem; background: #9e9e9e; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    productosHTML += '</div>';
+    productosHTML += `
+        <div style="text-align: right; margin-top: 1rem; font-size: 1.3rem; font-weight: bold; color: #2196F3;">
+            TOTAL: <span id="totalEditado">S/ ${parseFloat(ventaActual.total).toFixed(2)}</span>
+        </div>
+    `;
+    
+    content.innerHTML = productosHTML;
+    
+    cerrarModal('detalleVentaModal');
+    modal.style.display = 'block';
+}
+
+// Cambiar cantidad de producto
+function cambiarCantidad(productoId, delta) {
+    const input = document.getElementById(`cant_${productoId}`);
+    const newValue = Math.max(0, parseInt(input.value) + delta);
+    input.value = newValue;
+    actualizarSubtotal(productoId);
+}
+
+// Actualizar subtotal de producto
+function actualizarSubtotal(productoId) {
+    const cantidad = parseInt(document.getElementById(`cant_${productoId}`).value) || 0;
+    const producto = ventaActual.productos[productoId];
+    
+    if (!producto) return;
+    
+    const subtotal = cantidad * parseFloat(producto.precioUnitario);
+    document.getElementById(`subtotal_${productoId}`).textContent = `S/ ${subtotal.toFixed(2)}`;
+    
+    // Actualizar total general
+    let totalGeneral = 0;
+    Object.keys(ventaActual.productos).forEach(pid => {
+        const cant = parseInt(document.getElementById(`cant_${pid}`)?.value || 0);
+        const prod = ventaActual.productos[pid];
+        totalGeneral += cant * parseFloat(prod.precioUnitario);
+    });
+    
+    document.getElementById('totalEditado').textContent = `S/ ${totalGeneral.toFixed(2)}`;
+}
+
+// Eliminar producto de la venta
+function eliminarProductoVenta(productoId) {
+    if (confirm('¿Eliminar este producto de la venta?')) {
+        delete ventaActual.productos[productoId];
+        iniciarEdicionVenta(); // Recargar modal
+    }
+}
+
+// Guardar edición de venta
+function guardarEdicionVenta() {
+    if (!ventaActual || !ventaActual.id) {
+        alert('Error: No se puede identificar la venta');
+        return;
+    }
+    
+    // Recopilar nuevos datos
+    const productosActualizados = {};
+    let totalNuevo = 0;
+    let cambioStock = {}; // { productoId: diferenciaCantidad }
+    
+    Object.keys(ventaActual.productos).forEach(prodId => {
+        const cantInput = document.getElementById(`cant_${prodId}`);
+        if (!cantInput) return;
+        
+        const cantidadNueva = parseInt(cantInput.value) || 0;
+        
+        if (cantidadNueva > 0) {
+            const producto = ventaActual.productos[prodId];
+            const subtotal = cantidadNueva * parseFloat(producto.precioUnitario);
+            
+            productosActualizados[prodId] = {
+                ...producto,
+                cantidad: cantidadNueva,
+                subtotal: subtotal
+            };
+            
+            totalNuevo += subtotal;
+            
+            // Calcular diferencia para ajustar stock
+            const cantidadAntigua = ventaActual.productos[prodId].cantidad;
+            const diferencia = cantidadAntigua - cantidadNueva; // Positivo = reponer, Negativo = descontar más
+            cambioStock[prodId] = diferencia;
+        } else {
+            // Si cantidad es 0, significa que se eliminó
+            const cantidadAntigua = ventaActual.productos[prodId].cantidad;
+            cambioStock[prodId] = cantidadAntigua; // Reponer todo
+        }
+    });
+    
+    if (Object.keys(productosActualizados).length === 0) {
+        alert('No puedes dejar la venta sin productos. Si deseas eliminarla, usa el botón Eliminar Venta.');
+        return;
+    }
+    
+    if (!confirm('¿Guardar los cambios en esta venta?')) return;
+    
+    // Actualizar venta en Firebase
+    const updates = {
+        productos: productosActualizados,
+        total: totalNuevo
+    };
+    
+    database.ref('ventas/' + ventaActual.id).update(updates)
+        .then(() => {
+            // Ajustar stock de productos
+            const promesas = [];
+            
+            Object.entries(cambioStock).forEach(([prodId, diferencia]) => {
+                if (diferencia !== 0) {
+                    const promesa = database.ref('productos/' + prodId + '/stock').transaction((currentStock) => {
+                        return (currentStock || 0) + diferencia;
+                    });
+                    promesas.push(promesa);
+                }
+            });
+            
+            return Promise.all(promesas);
+        })
+        .then(() => {
+            alert('✅ Venta actualizada y stock ajustado correctamente');
+            cerrarModal('editarVentaModal');
+            ventaActual = null;
+        })
+        .catch(error => {
+            alert('Error al actualizar venta: ' + error.message);
+        });
+}
+
+// Confirmar eliminación
+function confirmarEliminarVenta() {
+    if (!ventaActual || !ventaActual.id) {
+        alert('Error: No se puede identificar la venta');
+        return;
+    }
+    
+    const listaHTML = Object.values(ventaActual.productos || {}).map(item => `
+        <div style="padding: 0.5rem; text-align: left;">
+            • <strong>${item.nombre}:</strong> +${item.cantidad} unidades
+        </div>
+    `).join('');
+    
+    document.getElementById('stockReponerLista').innerHTML = listaHTML;
+    
+    cerrarModal('detalleVentaModal');
+    document.getElementById('confirmarEliminarModal').style.display = 'block';
+}
+
+// Eliminar venta y reponer stock
+function eliminarVenta() {
+    if (!ventaActual || !ventaActual.id) {
+        alert('Error: No se puede identificar la venta');
+        return;
+    }
+    
+    const ventaId = ventaActual.id;
+    const productos = ventaActual.productos || {};
+    
+    // Primero reponer stock
+    const promesas = [];
+    
+    Object.values(productos).forEach(item => {
+        const promesa = database.ref('productos/' + item.productoId + '/stock').transaction((currentStock) => {
+            return (currentStock || 0) + item.cantidad;
+        });
+        promesas.push(promesa);
+    });
+    
+    Promise.all(promesas)
+        .then(() => {
+            // Luego eliminar venta
+            return database.ref('ventas/' + ventaId).remove();
+        })
+        .then(() => {
+            alert('✅ Venta eliminada y stock repuesto correctamente');
+            cerrarModal('confirmarEliminarModal');
+            ventaActual = null;
+        })
+        .catch(error => {
+            alert('Error al eliminar venta: ' + error.message);
+        });
+}
+
+// ==================== ACTUALIZAR MÉTRICAS ====================
+function actualizarMetricas() {
+    if (!window.allVentas || !window.allProductos) return;
+    
+    // Total vendido hoy
+    const hoy = new Date().setHours(0,0,0,0);
+    const ventasHoy = window.allVentas.filter(v => new Date(v.fecha).setHours(0,0,0,0) === hoy);
+    const totalHoy = ventasHoy.reduce((sum, v) => sum + parseFloat(v.total || 0), 0);
+    const metricTotalHoyEl = document.getElementById('metricTotalHoy');
+    if (metricTotalHoyEl) {
+        metricTotalHoyEl.textContent = `S/ ${totalHoy.toFixed(2)}`;
+    }
+    
+    // Ventas del mes
+    const mesActual = new Date().getMonth();
+    const añoActual = new Date().getFullYear();
+    const ventasMes = window.allVentas.filter(v => {
+        const fechaVenta = new Date(v.fecha);
+        return fechaVenta.getMonth() === mesActual && fechaVenta.getFullYear() === añoActual;
+    });
+    const metricVentasMesEl = document.getElementById('metricVentasMes');
+    if (metricVentasMesEl) {
+        metricVentasMesEl.textContent = ventasMes.length;
+    }
+    
+    // Productos con stock bajo (≤ 10)
+    const stockBajo = window.allProductos.filter(p => p.stock <= 10).length;
+    const metricStockBajoEl = document.getElementById('metricStockBajo');
+    if (metricStockBajoEl) {
+        metricStockBajoEl.textContent = stockBajo;
+    }
+    
+    // Total productos
+    const metricTotalProductosEl = document.getElementById('metricTotalProductos');
+    if (metricTotalProductosEl) {
+        metricTotalProductosEl.textContent = window.allProductos.length;
+    }
+}

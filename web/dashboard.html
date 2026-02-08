@@ -13,14 +13,15 @@
   <!-- Mobile Toggle -->
   <button id="menuToggle" class="menu-toggle" onclick="toggleSidebar()">☰</button>
 
+  <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
     <div class="logo">
       <h2>Gestión Ollas</h2>
     </div>
     <nav>
       <ul>
-        <li><a href="#" class="active" onclick="showSection('productos'); toggleSidebar();">Productos</a></li>
-        <li><a href="#" onclick="showSection('ventas'); toggleSidebar();">Ventas</a></li>
+        <li><a href="#" class="active" onclick="showSection('productos')">📦 Productos</a></li>
+        <li><a href="#" onclick="showSection('ventas')">💰 Ventas</a></li>
       </ul>
     </nav>
     <div class="user-info">
@@ -29,23 +30,57 @@
     </div>
   </div>
 
+  <!-- MAIN CONTENT -->
   <div class="main-content">
-    <!-- PRODUCTOS SECTION -->
+
+    <!-- ==================== PRODUCTOS SECTION ==================== -->
     <div id="productosSection" class="section">
       <div class="header">
         <h1>Inventario de Productos</h1>
         <button class="btn-primary" onclick="abrirModalProducto()">+ Nuevo Producto</button>
       </div>
 
-      <div class="filters">
-        <div class="filter-group" style="width: 100%;">
-          <input type="text" id="searchProduct" placeholder="Buscar por nombre o categoría..."
-            onkeyup="filterProductos()" style="width: 100%;">
+      <!-- MÉTRICAS -->
+      <!-- MÉTRICAS PROFESIONALES -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div style="font-size: 0.8125rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem;">TOTAL
+            VENDIDO HOY</div>
+          <div id="metricTotalHoy" style="font-size: 2rem; font-weight: 700; color: var(--primary);">S/ 0.00</div>
+        </div>
+      
+        <div class="metric-card">
+          <div style="font-size: 0.8125rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem;">VENTAS DEL
+            MES</div>
+          <div id="metricVentasMes" style="font-size: 2rem; font-weight: 700; color: var(--success);">0</div>
+        </div>
+      
+        <div class="metric-card">
+          <div style="font-size: 0.8125rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem;">PRODUCTOS
+            STOCK BAJO</div>
+          <div id="metricStockBajo" style="font-size: 2rem; font-weight: 700; color: var(--warning);">0</div>
+        </div>
+      
+        <div class="metric-card">
+          <div style="font-size: 0.8125rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem;">TOTAL
+            PRODUCTOS</div>
+          <div id="metricTotalProductos" style="font-size: 2rem; font-weight: 700; color: var(--info);">0</div>
         </div>
       </div>
 
+
+      <!-- FILTROS -->
+      <div class="filters">
+        <div class="filter-group" style="flex: 1;">
+          <label for="searchProduct">🔍 Buscar</label>
+          <input type="text" id="searchProduct" placeholder="Buscar por nombre o categoría..."
+            onkeyup="filterProductos()">
+        </div>
+      </div>
+
+      <!-- TABLA DE PRODUCTOS -->
       <div class="card">
-        <div class="table-responsive">
+        <div class="table-responsive scrollable" style="max-height: 500px; overflow-y: auto;">
           <table id="productosTable">
             <thead>
               <tr>
@@ -59,42 +94,52 @@
             </thead>
             <tbody>
               <tr>
-                <td colspan="5" style="text-align: center;">Cargando productos...</td>
+                <td colspan="6" style="text-align: center; padding: 2rem;">
+                  <div style="display: inline-block;">
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">⏳</div>
+                    <div>Cargando productos...</div>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+
     </div>
 
-    <!-- VENTAS SECTION -->
+    <!-- ==================== VENTAS SECTION ==================== -->
     <div id="ventasSection" class="section" style="display: none;">
       <div class="header">
         <h1>Registro de Ventas</h1>
-        <button class="btn-primary" onclick="exportarReporteDiario()" style="background-color: #217346;">Reporte Diario
-          Contador (Excel)</button>
+        <button class="btn-primary" onclick="exportarReporteDiario()"
+          style="background: linear-gradient(135deg, #10b981, #059669);">
+          📥 Reporte Excel
+        </button>
       </div>
 
-      <!-- Total Card -->
+      <!-- TOTAL DEL DÍA -->
       <div class="card"
-        style="margin-bottom: 1rem; text-align: center; background: #e3f2fd; border-left: 5px solid #2196F3;">
-        <h3>Total Vendido Hoy</h3>
-        <h1 id="totalVentasDiaDisplay" style="color: #1565C0; font-size: 2.5rem; margin: 0.5rem 0;">S/ 0.00</h1>
+        style="margin-bottom: 1.5rem; text-align: center; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left: 5px solid #2563eb; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h3 style="color: #1e40af; margin-bottom: 0.5rem;">💵 Total Vendido Hoy</h3>
+        <h1 id="totalVentasDiaDisplay" style="color: #1e40af; font-size: 2.5rem; margin: 0;">S/ 0.00</h1>
       </div>
 
+      <!-- FILTROS -->
       <div class="filters">
         <div class="filter-group">
-          <label for="filterDate">Día:</label>
+          <label for="filterDate">📅 Fecha</label>
           <input type="date" id="filterDate" onchange="filterVentas()">
         </div>
         <div class="filter-group">
-          <label for="filterSeller">Vendedor:</label>
+          <label for="filterSeller">👤 Vendedor</label>
           <input type="text" id="filterSeller" placeholder="Nombre vendedor" onkeyup="filterVentas()">
         </div>
       </div>
 
+      <!-- TABLA DE VENTAS -->
       <div class="card">
-        <div class="table-responsive">
+        <div class="table-responsive scrollable" style="max-height: 500px; overflow-y: auto;">
           <table id="ventasTable">
             <thead>
               <tr>
@@ -107,66 +152,73 @@
             </thead>
             <tbody>
               <tr>
-                <td colspan="5" style="text-align: center;">Cargando ventas...</td>
+                <td colspan="5" style="text-align: center; padding: 2rem;">
+                  <div style="display: inline-block;">
+                    <div style="font-size: 3rem; margin-bottom: 0.5rem;">⏳</div>
+                    <div>Cargando ventas...</div>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+
     </div>
+
   </div>
 
-  <!-- Printable Area -->
-  <div id="printableArea">
-    <!-- Content injected by JS -->
-  </div>
+  <!-- ==================== ÁREA DE IMPRESIÓN ==================== -->
+  <div id="printableArea"></div>
 
-  <!-- Picking Modal -->
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal: Picking (Detalle Almacén) -->
   <div id="pickingModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="cerrarModal('pickingModal')">&times;</span>
-      <h2>Detalle de Picking (Almacén)</h2>
+      <h2>📋 Detalle de Picking (Almacén)</h2>
       <div id="pickingContent"></div>
       <button class="btn-primary" onclick="cerrarModal('pickingModal')" style="margin-top: 1rem;">Cerrar</button>
     </div>
   </div>
 
-  <!-- Product Modal (Add) -->
+  <!-- Modal: Nuevo Producto -->
   <div id="productoModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="cerrarModal('productoModal')">&times;</span>
-      <h2>Nuevo Producto</h2>
+      <h2>➕ Nuevo Producto</h2>
       <form id="productoForm" onsubmit="guardarNuevoProducto(event)">
         <div class="form-group">
           <label>Nombre:</label>
-          <input type="text" id="prodNombre" required>
+          <input type="text" id="prodNombre" required placeholder="Ej: Olla N° 24">
         </div>
         <div class="form-group">
           <label>Código:</label>
-          <input type="text" id="prodCodigo" required>
+          <input type="text" id="prodCodigo" required placeholder="Ej: OLL-024">
         </div>
         <div class="form-group">
           <label>Categoría:</label>
-          <input type="text" id="prodCategoria" required>
+          <input type="text" id="prodCategoria" required placeholder="Ej: Ollas">
         </div>
         <div class="form-group">
           <label>Precio Unitario (S/):</label>
-          <input type="number" step="0.01" id="prodPrecio" required>
+          <input type="number" step="0.01" id="prodPrecio" required placeholder="0.00">
         </div>
         <div class="form-group">
           <label>Stock Inicial:</label>
-          <input type="number" id="prodStock" required>
+          <input type="number" id="prodStock" required placeholder="0">
         </div>
-        <button type="submit" class="btn-primary">Guardar</button>
+        <button type="submit" class="btn-primary">💾 Guardar Producto</button>
       </form>
     </div>
   </div>
 
-  <!-- Edit Modal -->
+  <!-- Modal: Editar Producto -->
   <div id="editarModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="cerrarModal('editarModal')">&times;</span>
-      <h2>Editar Producto</h2>
+      <h2>✏️ Editar Producto</h2>
       <input type="hidden" id="editId">
       <div class="form-group">
         <label>Nombre:</label>
@@ -180,31 +232,101 @@
         <label>Stock:</label>
         <input type="number" id="editStock" required>
       </div>
-      <button class="btn-primary" onclick="guardarEdicionProducto()">Guardar Cambios</button>
+      <button class="btn-primary" onclick="guardarEdicionProducto()">💾 Guardar Cambios</button>
     </div>
   </div>
 
-  <!-- Stock Modal -->
+  <!-- Modal: Ajuste de Stock -->
   <div id="stockModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="cerrarModal('stockModal')">&times;</span>
-      <h2>Ajuste de Stock</h2>
-      <h3 id="stockProdName"></h3>
-      <p>Stock Actual: <span id="stockActualDisplay"></span></p>
+      <h2>📊 Ajuste de Stock</h2>
+      <h3 id="stockProdName" style="color: var(--primary); margin-bottom: 1rem;"></h3>
+      <div style="background: var(--bg-main); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+        <p style="margin: 0;">Stock Actual: <strong id="stockActualDisplay"
+            style="font-size: 1.5rem; color: var(--primary);"></strong></p>
+      </div>
       <input type="hidden" id="stockId">
       <div class="form-group">
         <label>Cantidad a ajustar:</label>
         <input type="number" id="stockCantidad" min="1" value="1">
       </div>
-      <div style="display: flex; gap: 1rem; justify-content: center;">
-        <button class="btn-primary" style="background-color: #2196F3;" onclick="aplicarStock(1)">+ Ingreso</button>
-        <button class="btn-primary" style="background-color: #f44336;" onclick="aplicarStock(-1)">- Salida /
-          Pérdida</button>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <button class="btn-primary" style="background: linear-gradient(135deg, #2563eb, #3b82f6);"
+          onclick="aplicarStock(1)">
+          ➕ Ingreso
+        </button>
+        <button class="btn-primary" style="background: linear-gradient(135deg, #ef4444, #dc2626);"
+          onclick="aplicarStock(-1)">
+          ➖ Salida / Pérdida
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- SheetJS -->
+  <!-- Modal: Detalles de Venta -->
+  <div id="detalleVentaModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <span class="close-modal" onclick="cerrarModal('detalleVentaModal')">&times;</span>
+      <h2>📄 Detalles de la Venta</h2>
+      <div id="detalleVentaContent"></div>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+        <button class="btn-primary" style="background: linear-gradient(135deg, #f59e0b, #d97706);"
+          onclick="iniciarEdicionVenta()">
+          ✏️ Editar Venta
+        </button>
+        <button class="btn-primary" style="background: linear-gradient(135deg, #ef4444, #dc2626);"
+          onclick="confirmarEliminarVenta()">
+          🗑️ Eliminar Venta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Editar Venta -->
+  <div id="editarVentaModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <span class="close-modal" onclick="cerrarModal('editarVentaModal')">&times;</span>
+      <h2>✏️ Editar Venta</h2>
+      <div id="editarVentaContent"></div>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+        <button class="btn-primary" onclick="guardarEdicionVenta()">💾 Guardar Cambios</button>
+        <button class="btn-primary" style="background: #6b7280;"
+          onclick="cerrarModal('editarVentaModal')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Confirmar Eliminación -->
+  <div id="confirmarEliminarModal" class="modal">
+    <div class="modal-content" style="max-width: 550px;">
+      <span class="close-modal" onclick="cerrarModal('confirmarEliminarModal')">&times;</span>
+      <div style="text-align: center;">
+        <div style="font-size: 4rem; color: #ef4444;">⚠️</div>
+        <h2 style="color: #ef4444; margin: 1rem 0;">¿Eliminar Venta?</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Esta acción NO se puede deshacer.</p>
+        <div id="stockReponerInfo"
+          style="background: #fef3c7; padding: 1.5rem; border-radius: 12px; margin: 1.5rem 0; border-left: 4px solid #f59e0b;">
+          <strong style="display: block; margin-bottom: 1rem; color: #92400e;">📦 Se repondrá el siguiente
+            stock:</strong>
+          <div id="stockReponerLista" style="text-align: left; max-height: 200px; overflow-y: auto;"></div>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+          <button class="btn-primary" style="background: linear-gradient(135deg, #ef4444, #dc2626);"
+            onclick="eliminarVenta()">
+            🗑️ Sí, Eliminar
+          </button>
+          <button class="btn-primary" style="background: #6b7280;" onclick="cerrarModal('confirmarEliminarModal')">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SCRIPTS ==================== -->
+
+  <!-- SheetJS para Excel -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
   <!-- Firebase SDKs -->
@@ -212,26 +334,60 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
 
+  <!-- App Logic -->
   <script src="js/app.js"></script>
+
+  <!-- Initialization -->
   <script>
-    // Check auth on load
+    // Auth check y inicialización
     window.onload = function () {
       checkAuth();
       initDashboard();
     }
 
-    // Sidebar Toggle
+    // Toggle sidebar en móvil
     function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+
+      if (sidebar.classList.contains('active')) {
+        document.addEventListener('click', closeSidebarOnClickOutside);
+      } else {
+        document.removeEventListener('click', closeSidebarOnClickOutside);
+      }
+    }
+
+    // Cerrar sidebar al hacer clic fuera
+    function closeSidebarOnClickOutside(event) {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('menuToggle');
+
+      if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+        sidebar.classList.remove('active');
+        document.removeEventListener('click', closeSidebarOnClickOutside);
+      }
+    }
+
+    // Mostrar sección y actualizar navegación
+    function showSection(sectionId) {
+      // Ocultar todas las secciones
+      document.querySelectorAll('.section').forEach(el => el.style.display = 'none');
+
+      // Mostrar sección seleccionada
+      document.getElementById(sectionId + 'Section').style.display = 'block';
+
+      // Actualizar clase active en navegación
+      document.querySelectorAll('.sidebar nav a').forEach(el => el.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Cerrar sidebar en móvil
       if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
-        if (sidebar.style.display === 'flex') {
-          sidebar.style.display = 'none';
-        } else {
-          sidebar.style.display = 'flex';
-        }
+        sidebar.classList.remove('active');
       }
     }
   </script>
+
 </body>
 
 </html>
